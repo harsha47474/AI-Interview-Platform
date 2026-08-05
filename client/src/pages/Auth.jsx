@@ -1,61 +1,80 @@
-import React from 'react'
-import { BsRobot } from "react-icons/bs"
+import React from "react";
+import { BsRobot } from "react-icons/bs";
 import { FaBrain } from "react-icons/fa";
-import { motion } from "motion/react"
+import { motion } from "motion/react";
 import { FcGoogle } from "react-icons/fc";
-import { signInWithPopup } from 'firebase/auth';
-import { auth, provider } from '../utils/firebase';
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../utils/firebase";
+import axios from "axios";
 
 const Auth = () => {
-    const handleGoogleAuth = async () => {
-        try {
-            const response = await signInWithPopup(auth, provider);
-            console.log(response);
-        } catch (error) {
-            console.log(error.message);
-        }
+  const handleGoogleAuth = async () => {
+    try {
+      const response = await signInWithPopup(auth, provider);
+      let user = response.user;
+      const name = user.displayName;
+      const email = user.email;
+      const result = await axios.post(
+        "http://localhost:3000" + "/api/auth/google-auth",
+        { name, email },
+        { withCredentials: true },
+      );
+      console.log(result);
+    } catch (error) {
+      console.log(error.message);
     }
+  };
 
   return (
-      <motion.div
-          initial={{ opacity: 0, y: -40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.05 }}
-          className='w-full min-h-screen bg-[#f3f3f3] flex items-center
-      justify-center px-6 py-20'>
-          <div className='w-full max-w-md p-8 rounded-3xl bg-white shadow-2xl
-          border border-gray-200'>
-              <div className='flex items-center justify-center gap-3 mb-6'>
-                  <div className='bg-black text-white p-2 rounded-lg'>
-                      <BsRobot size={18} />
-                  </div>
-                  <h2 className='font-semibold text-lg'>Colloquium</h2>
-              </div>
-
-              <h1 className='text-2xl md:text-3xl font-semibold text-center
-              loading-snug mb-4'>
-                  Continue with
-                  <span className='bg-teal-400 px-3 py-1 rounded-full
-                  inline-flex items-center gap-2 mt-2 text-teal-50'>
-                      <FaBrain size={20} /> AI Smart Interview
-                  </span>
-              </h1>
-              <p className='text-sm md:text-base text-gray-400 text-center mb-8 leading-relaxed'>
-                  Sign in to your AI interview platform to access your mock sessions, review feedback reports, and manage your account. You will need your secure login and your registered email address.
-              </p>
-
-              <motion.button
-                  onClick={handleGoogleAuth}
-                  whileHover={{ opacity: 0.9, scale: 1.03 }}
-                  whileTap={{ opacity: 1, scale: 0.9 }}
-                  className='w-full flex items-center justify-center
-              gap-3 py-3 bg-black text-white rounded-full shadow-md'>
-                  <FcGoogle size={20} />
-                  Continue with Google
-              </motion.button>
+    <motion.div
+      initial={{ opacity: 0, y: -40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1.05 }}
+      className="w-full min-h-screen bg-[#f3f3f3] flex items-center
+      justify-center px-6 py-20"
+    >
+      <div
+        className="w-full max-w-md p-8 rounded-3xl bg-white shadow-2xl
+          border border-gray-200"
+      >
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <div className="bg-black text-white p-2 rounded-lg">
+            <BsRobot size={18} />
           </div>
-      </motion.div>
-  )
-}
+          <h2 className="font-semibold text-lg">Colloquium</h2>
+        </div>
 
-export default Auth
+        <h1
+          className="text-2xl md:text-3xl font-semibold text-center
+              loading-snug mb-4"
+        >
+          Continue with
+          <span
+            className="bg-teal-400 px-3 py-1 rounded-full
+                  inline-flex items-center gap-2 mt-2 text-teal-50"
+          >
+            <FaBrain size={20} /> AI Smart Interview
+          </span>
+        </h1>
+        <p className="text-sm md:text-base text-gray-400 text-center mb-8 leading-relaxed">
+          Sign in to your AI interview platform to access your mock sessions,
+          review feedback reports, and manage your account. You will need your
+          secure login and your registered email address.
+        </p>
+
+        <motion.button
+          onClick={handleGoogleAuth}
+          whileHover={{ opacity: 0.9, scale: 1.03 }}
+          whileTap={{ opacity: 1, scale: 0.9 }}
+          className="w-full flex items-center justify-center
+              gap-3 py-3 bg-black text-white rounded-full shadow-md"
+        >
+          <FcGoogle size={20} />
+          Continue with Google
+        </motion.button>
+      </div>
+    </motion.div>
+  );
+};
+
+export default Auth;
