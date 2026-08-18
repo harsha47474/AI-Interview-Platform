@@ -4,8 +4,12 @@ import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import axios from "axios";
 import { useEffect } from "react";
-
+import { useDispatch } from "react-redux";
+import { setUserData } from "./redux/userSlice.js";
 const App = () => {
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -15,16 +19,15 @@ const App = () => {
             withCredentials: true,
           },
         );
-
-        console.log(response.data);
+        dispatch(setUserData(response.data));
       } catch (error) {
-        console.log(error.response?.status);
-        console.log(error.response?.data);
+        console.log(error);
+        dispatch(setUserData(null));
       }
     };
 
     getUser();
-  }, []);
+  }, [dispatch]);
   return (
     <Routes>
       <Route path="/" element={<Home />} />
