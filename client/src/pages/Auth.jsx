@@ -6,11 +6,22 @@ import { FcGoogle } from "react-icons/fc";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../utils/firebase";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserData } from "../redux/userSlice";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const Auth = () => {
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const userData = useSelector((state) => state.user.userData);
+
+  useEffect(() => {
+    if (userData) {
+      navigate("/");
+    }
+  }, [userData, navigate]);
 
   const handleGoogleAuth = async () => {
     try {
@@ -24,6 +35,7 @@ const Auth = () => {
         { withCredentials: true },
       );
       dispatch(setUserData(result.data));
+      navigate("/");
     } catch (error) {
       console.log(error.message);
       dispatch(setUserData(null));
