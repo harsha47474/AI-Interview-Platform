@@ -16,7 +16,8 @@ export const isAuth = (req, res, next) => {
 
         next();
     } catch (error) {
-        console.error(error);
+        console.error("JWT ERROR:", error.message);
+
         return res.status(401).json({
             message: "Invalid token",
         });
