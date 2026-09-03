@@ -16,9 +16,11 @@ import resume from "../assets/resume.png";
 import pdf from "../assets/pdf.png";
 import history from "../assets/history.png";
 import Footer from "../components/Footer";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const { userData } = useSelector((state) => state.user);
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-[#f3f3f3] flex flex-col">
@@ -51,6 +53,7 @@ const Home = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="flex items-center gap-2 px-6 py-3 rounded-xl bg-green-600 text-white shadow-md"
+              onClick={(e) => { e.preventDefault(); navigate("/interview") }}
             >
               <FaPlay />
               Start Interview

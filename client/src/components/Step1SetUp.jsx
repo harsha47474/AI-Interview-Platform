@@ -10,8 +10,14 @@ import {
   FaSpinner,
 } from "react-icons/fa";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 
 const Step1SetUp = ({ onStartInterview }) => {
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.user.userData);
+
   const [role, setRole] = useState("");
   const [experience, setExperience] = useState("");
   const [projects, setProjects] = useState([]);
@@ -22,6 +28,7 @@ const Step1SetUp = ({ onStartInterview }) => {
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzedData, setAnalyzedData] = useState(false);
   const [analysis, setAnalysis] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleResume = async (e) => {
     const file = e.target.files[0];
@@ -51,12 +58,30 @@ const Step1SetUp = ({ onStartInterview }) => {
     } catch (error) {
       console.log(error);
     }
+  };
 
-    // TODO: Api call ( for time being this is timeout function )
-    setTimeout(() => {
-      setAnalyzing(false);
-      setAnalyzedData(true);
-    }, 2500);
+  const handleStartInterview = async (e) => {
+    try {
+      e.preventDefault();
+      setLoading(true);
+
+      const res = await axios.post(
+        "http://localhost:3000/api/interview/generate-questions",
+        { role, experience, mode, resumeText, projects, skills },
+        { withCredentials: true }
+      );
+
+      if (userData) {
+        dispatch(setUserData({ ...userData, credits: res.data.creditsLeft }));
+      }
+
+      console.log(res.data);
+      setLoading(false);
+      onStartInterview(res.data);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
   };
 
   return (
@@ -203,20 +228,17 @@ const Step1SetUp = ({ onStartInterview }) => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
               {[
-                "Technical Interview",
-                "HR Interview",
-                "Behavioral Interview",
-                "Mixed Interview",
+                "Technical",
+                "HR",
               ].map((item) => (
                 <motion.button
                   key={item}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => setMode(item)}
                   className={`p-3 rounded-xl border text-sm text-left transition
-                    ${
-                      mode === item
-                        ? "border-green-500 bg-green-50 text-green-700"
-                        : "border-gray-200 text-gray-600 hover:border-green-300"
+                    ${mode === item
+                      ? "border-green-500 bg-green-50 text-green-700"
+                      : "border-gray-200 text-gray-600 hover:border-green-300"
                     }`}
                 >
                   {item}
@@ -352,21 +374,29 @@ const Step1SetUp = ({ onStartInterview }) => {
           )}
 
           {/* START */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={(e) => {
-              e.preventDefault();
-              onStartInterview({ role, experience, mode });
-            }}
-            disabled={!role || !experience || !mode || analyzing}
-            className="w-full mt-6 py-3 rounded-xl bg-green-600
+          {loading ? (<>
+            <FaSpinner className="text-green-600 text-2xl animate-spin" />
+            <p className="text-sm text-gray-600 mt-3">
+              Analyzing your resume...
+            </p>
+          </>
+          ) : (
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={(e) => {
+                e.preventDefault();
+                handleStartInterview(e);
+              }}
+              disabled={!role || !experience || !mode || analyzing}
+              className="w-full mt-6 py-3 rounded-xl bg-green-600
                        hover:bg-green-700 text-white font-semibold
                        disabled:bg-gray-300 disabled:cursor-not-allowed
                        transition"
-          >
-            Start Interview
-          </motion.button>
+            >
+              Start Interview
+            </motion.button>
+          )}
         </motion.div>
       </div>
     </div>
