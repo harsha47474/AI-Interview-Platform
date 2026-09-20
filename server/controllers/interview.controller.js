@@ -386,7 +386,7 @@ export const getHistory = async (req, res) => {
   }
 
   try {
-    const interviews = await Interview.findById({ userId }).sort({ createdAt: -1 });
+    const interviews = await Interview.find({ userId }).sort({ createdAt: -1 });
     if (!interviews || interviews.length === 0) {
       return res.status(404).json({ message: "No interview history found" });
     }
@@ -396,5 +396,55 @@ export const getHistory = async (req, res) => {
     console.error("Get History Error:", error);
     return res.status(500).json({ message: error.message });
   }
+};
 
+export const getReport = async (req, res) => {
+  try {
+    const { interviewId } = req.params;
+    const interview = await Interview.findById(interviewId);
+
+    if (!interview) {
+      return res.status(400).json({ message: "Failed to find interview" });
+    }
+
+    let totalScore = 0;
+    const totalQuestions = interview.questions.length;
+    let totalConfidence = 0;
+    let totalCommunication = 0;
+    let totalCorrectness = 0;
+
+    interview.questions.forEach((q) => {
+      console.log(q.score);
+      totalScore += q.score || 0;
+      totalConfidence += q.confidence || 0;
+      totalCommunication += q.communication || 0;
+      totalCorrectness += q.correctness || 0;
+    });
+
+    interview.finalScore = totalScore / totalQuestions;
+    interview.confidence = totalConfidence / totalQuestions;
+    interview.communication = totalCommunication / totalQuestions;
+    interview.correctness = totalCorrectness / totalQuestions;
+
+    return res.status(200).json({
+      data: {
+        finalScore: Number(interview.finalScore.toFixed(1)) || 0,
+        confidence: Number((totalConfidence / totalQuestions).toFixed(1)) || 0,
+        communication:
+          Number((totalCommunication / totalQuestions).toFixed(1)) || 0,
+        correctness: Number((totalCorrectness / totalQuestions).toFixed(1)) || 0,
+        questionWiseScore: interview.questions.map((q) => ({
+          question: q.question || 0,
+          score: Number(q.score.toFixed(1)) || 0,
+          confidence: Number(q.confidence.toFixed(1)) || 0,
+          communication: Number(q.communication.toFixed(1)) || 0,
+          correctness: Number(q.correctness.toFixed(1)) || 0,
+          feedback: q.feedback || "",
+        })),
+      },
+    });
+  } catch (error) {
+    console.error("Get the report error:", error);
+    return res.status(500).json({ message: error.message });
+  }
 }
