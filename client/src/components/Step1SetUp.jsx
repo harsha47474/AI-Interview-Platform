@@ -66,7 +66,7 @@ const Step1SetUp = ({ onStartInterview }) => {
       setLoading(true);
 
       const res = await axios.post(
-        "http://localhost:3000/api/interview/generate-questions",
+        " /generate-questions",
         { role, experience, mode, resumeText, projects, skills },
         { withCredentials: true }
       );

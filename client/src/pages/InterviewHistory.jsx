@@ -14,6 +14,7 @@ export default function InterviewHistory() {
                     { withCredentials: true }
                 )
                 setInterviews(res.data.interviews);
+                console.log(res.data.interviews)
             } catch (error) {
                 console.error("Error fetching interview history:", error);
             }
