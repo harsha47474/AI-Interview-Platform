@@ -2,6 +2,7 @@ import fs from "fs";
 import { askAi } from "../services/openRouter.service.js";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import Interview from "../models/interview.model.js";
+import User from "../models/user.model.js";
 
 // this function analyzez the resume and lists the skills and projects of the user
 export const analyzeResume = async (req, res) => {
@@ -77,8 +78,7 @@ export const analyzeResume = async (req, res) => {
 // generate question function
 export const generateQuestion = async (req, res) => {
   try {
-    const { role, experience, mode, resumeText, projects, skills } = req.body;
-
+    let { role, experience, mode, resumeText, projects, skills } = req.body;
     role = role?.trim();
     experience = experience?.trim();
     mode = mode?.trim();
@@ -91,14 +91,14 @@ export const generateQuestion = async (req, res) => {
 
     const user = await User.findById(req.userId);
 
-    if (user.credit < 50) {
-      return res.status(400).json({
-        message: "Not enough credits. Minimum 50 required",
-      });
-    }
+    // if (user.credits < 50) {
+    //   return res.status(400).json({
+    //     message: "Not enough credits. Minimum 50 required",
+    //   });
+    // }
 
     const projectText =
-      Arrays.isArray(projects) && projects.length
+      Array.isArray(projects) && projects.length
         ? projects.join(", ")
         : "None";
 
@@ -356,11 +356,11 @@ export const finishInterview = async (req, res) => {
     return res.status(200).json({
       message: "Interview Completed Successfully",
       data: {
-        finalScore: Number(finalScore.toFixed(1)),
-        confidence: Number(totalConfidence / totalQuestions.toFixed(1)) || 0,
+        finalScore: Number(interview.finalScore.toFixed(1)) || 0,
+        confidence: Number((totalConfidence / totalQuestions).toFixed(1)) || 0,
         communication:
-          Number(totalCommunication / totalQuestions.toFixed(1)) || 0,
-        correctness: Number(totalCorrectness / totalQuestions.toFixed(1)) || 0,
+          Number((totalCommunication / totalQuestions).toFixed(1)) || 0,
+        correctness: Number((totalCorrectness / totalQuestions).toFixed(1)) || 0,
         questionWiseScore: interview.questions.map((q) => ({
           question: q.question || 0,
           score: Number(q.score.toFixed(1)) || 0,
@@ -376,3 +376,25 @@ export const finishInterview = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+
+export const getHistory = async (req, res) => {
+  const userId = req.userId;
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  try {
+    const interviews = await Interview.findById({ userId }).sort({ createdAt: -1 });
+    if (!interviews || interviews.length === 0) {
+      return res.status(404).json({ message: "No interview history found" });
+    }
+
+    return res.status(200).json({ interviews });
+  } catch (error) {
+    console.error("Get History Error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+
+}

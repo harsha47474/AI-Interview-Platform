@@ -12,12 +12,12 @@ export const googleAuth = async (req, res) => {
         email,
       });
     }
-
+      
     let token = await generateToken(user._id);
     res.cookie("token", token, {
-      http: true,
+      httpOnly: true,
       secure: false,
-      sameSite: "strict",
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

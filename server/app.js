@@ -22,7 +22,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/interview", interviewRouter);
 
-const PORT = process.env.PORT | 3000;
+const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
   res.send("This is my new Project. Working on an AI interview platform");

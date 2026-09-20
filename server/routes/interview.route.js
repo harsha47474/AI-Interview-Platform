@@ -5,6 +5,7 @@ import {
   finishInterview,
   generateQuestion,
   submitAnswer,
+  getHistory,
 } from "../controllers/interview.controller.js";
 import { upload } from "../middlewares/multer.js";
 
@@ -14,5 +15,6 @@ interviewRouter.post("/resume", isAuth, upload.single("resume"), analyzeResume);
 interviewRouter.post("/generate-questions", isAuth, generateQuestion);
 interviewRouter.post("/submit", isAuth, submitAnswer);
 interviewRouter.post("/finish", isAuth, finishInterview);
+interviewRouter.get("/history", isAuth, getHistory);
 
 export default interviewRouter;
