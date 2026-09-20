@@ -63,6 +63,7 @@ const Home = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-gray-700 border shadow-sm"
+              onClick={(e) => { e.preventDefault(); navigate("/interview/history") }}
             >
               <FaHistory />
               Show History

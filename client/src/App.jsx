@@ -6,6 +6,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "./redux/userSlice.js";
 import InterviewPage from "./pages/InterviewPage";
+import InterviewHistory from "./pages/InterviewHistory.jsx";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -49,7 +50,10 @@ const App = () => {
         path="/interview"
         element={userData ? <InterviewPage /> : <Navigate to="/auth" />}
       />
+      <Route path="/interview/history" element={userData ? <InterviewHistory /> : <Navigate to="/auth" />} />
+      <Route path="/report/:interviewId" element={userData ? <InterviewHistory /> : <Navigate to="/auth" />} />
       <Route path="*" element={<Navigate to={userData ? "/" : "/auth"} />} />
+
     </Routes>
   );
 };
