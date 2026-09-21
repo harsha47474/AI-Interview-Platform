@@ -62,7 +62,7 @@ function Step2Interview({ interviewData, onCompleteInterview }) {
     if (!videoRef.current) return;
     if (phase === "asking") {
       videoRef.current.currentTime = 0;
-      videoRef.current.play().catch(() => {});
+      videoRef.current.play().catch(() => { });
     } else {
       videoRef.current.pause();
     }
@@ -85,8 +85,8 @@ function Step2Interview({ interviewData, onCompleteInterview }) {
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          err.message ||
-          "An error occurred while submitting the answer."
+        err.message ||
+        "An error occurred while submitting the answer."
       );
 
       setPhase("submitFailed");
@@ -188,13 +188,13 @@ function Step2Interview({ interviewData, onCompleteInterview }) {
         saved = answerRef.current;
         try {
           rec.start();
-        } catch {}
+        } catch { }
       }
     };
 
     try {
       rec.start();
-    } catch {}
+    } catch { }
 
     const tick = setInterval(() => {
       const left = limit - Math.floor((Date.now() - startedAt) / 1000);
@@ -209,24 +209,39 @@ function Step2Interview({ interviewData, onCompleteInterview }) {
       rec.onend = null;
       try {
         rec.abort();
-      } catch {}
+      } catch { }
     };
   }, [phase, index, finishAnswer, question.timeLimit]);
 
   // Feedback phase
   useEffect(() => {
     if (phase !== "feedback") return;
-    const t = setTimeout(() => {
+
+    const t = setTimeout(async () => {
       if (index + 1 < questions.length) {
         setIndex((i) => i + 1);
         setPhase("asking");
       } else {
         setPhase("done");
-        onCompleteInterview?.();
+
+        try {
+          const res = await axios.post(
+            "http://localhost:3000/api/interview/finish",
+            { interviewId },
+            { withCredentials: true }
+          );
+
+          console.log("Final interview result:", res.data);
+
+          onCompleteInterview?.(res.data);
+        } catch (error) {
+          console.error("Failed to finish interview:", error);
+        }
       }
     }, 3000);
+
     return () => clearTimeout(t);
-  }, [phase, index, questions.length, onCompleteInterview]);
+  }, [phase, index, questions.length, interviewId, onCompleteInterview]);
 
   // Replay question audio if user wants to hear it again
   const handleReplayQuestion = () => {
@@ -302,13 +317,12 @@ function Step2Interview({ interviewData, onCompleteInterview }) {
           {questions.map((_, i) => (
             <div
               key={i}
-              className={`flex items-center justify-center rounded-lg text-xs font-bold transition-all duration-300 ${
-                i === index
-                  ? "w-8 h-8 bg-green-600 text-white shadow-xs scale-105 ring-2 ring-green-300 ring-offset-1"
-                  : i < index
+              className={`flex items-center justify-center rounded-lg text-xs font-bold transition-all duration-300 ${i === index
+                ? "w-8 h-8 bg-green-600 text-white shadow-xs scale-105 ring-2 ring-green-300 ring-offset-1"
+                : i < index
                   ? "w-7 h-7 bg-green-100 text-green-700"
                   : "w-7 h-7 bg-gray-100 text-gray-400"
-              }`}
+                }`}
             >
               {i < index ? <FaCheck size={10} /> : i + 1}
             </div>
@@ -318,13 +332,12 @@ function Step2Interview({ interviewData, onCompleteInterview }) {
         {/* Timer / Status Pill */}
         <div className="flex items-center gap-3">
           <div
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition-all duration-300 ${
-              isUrgent
-                ? "bg-red-50 text-red-600 border-red-300 animate-pulse"
-                : isWarning
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition-all duration-300 ${isUrgent
+              ? "bg-red-50 text-red-600 border-red-300 animate-pulse"
+              : isWarning
                 ? "bg-amber-50 text-amber-600 border-amber-300"
                 : "bg-gray-50 text-gray-700 border-gray-200"
-            }`}
+              }`}
           >
             <FaClock
               className={
@@ -335,12 +348,12 @@ function Step2Interview({ interviewData, onCompleteInterview }) {
               {phase === "listening"
                 ? `${timeLeft}s remaining`
                 : phase === "asking"
-                ? "AI speaking..."
-                : phase === "submitting"
-                ? "Evaluating..."
-                : phase === "feedback"
-                ? "Feedback ready"
-                : "Ready"}
+                  ? "AI speaking..."
+                  : phase === "submitting"
+                    ? "Evaluating..."
+                    : phase === "feedback"
+                      ? "Feedback ready"
+                      : "Ready"}
             </span>
           </div>
         </div>
@@ -373,26 +386,25 @@ function Step2Interview({ interviewData, onCompleteInterview }) {
               {/* Status Indicator Badge */}
               <div className="absolute top-4 left-4 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 text-xs text-white">
                 <span
-                  className={`w-2.5 h-2.5 rounded-full ${
-                    phase === "asking"
-                      ? "bg-green-400 animate-ping"
-                      : phase === "listening"
+                  className={`w-2.5 h-2.5 rounded-full ${phase === "asking"
+                    ? "bg-green-400 animate-ping"
+                    : phase === "listening"
                       ? "bg-emerald-400 animate-pulse"
                       : phase === "submitting"
-                      ? "bg-amber-400 animate-bounce"
-                      : "bg-gray-400"
-                  }`}
+                        ? "bg-amber-400 animate-bounce"
+                        : "bg-gray-400"
+                    }`}
                 />
                 <span className="font-medium capitalize">
                   {phase === "asking"
                     ? "Interviewer Speaking"
                     : phase === "listening"
-                    ? "Listening for Answer"
-                    : phase === "submitting"
-                    ? "Analyzing Response"
-                    : phase === "feedback"
-                    ? "Feedback Stage"
-                    : "Interviewer Ready"}
+                      ? "Listening for Answer"
+                      : phase === "submitting"
+                        ? "Analyzing Response"
+                        : phase === "feedback"
+                          ? "Feedback Stage"
+                          : "Interviewer Ready"}
                 </span>
               </div>
 
@@ -401,22 +413,20 @@ function Step2Interview({ interviewData, onCompleteInterview }) {
                 <button
                   type="button"
                   onClick={() => setSelectedAvatar("female")}
-                  className={`px-2.5 py-1 rounded-lg font-medium transition ${
-                    selectedAvatar === "female"
-                      ? "bg-white text-gray-900 shadow-xs"
-                      : "text-white/80 hover:text-white"
-                  }`}
+                  className={`px-2.5 py-1 rounded-lg font-medium transition ${selectedAvatar === "female"
+                    ? "bg-white text-gray-900 shadow-xs"
+                    : "text-white/80 hover:text-white"
+                    }`}
                 >
                   Elena
                 </button>
                 <button
                   type="button"
                   onClick={() => setSelectedAvatar("male")}
-                  className={`px-2.5 py-1 rounded-lg font-medium transition ${
-                    selectedAvatar === "male"
-                      ? "bg-white text-gray-900 shadow-xs"
-                      : "text-white/80 hover:text-white"
-                  }`}
+                  className={`px-2.5 py-1 rounded-lg font-medium transition ${selectedAvatar === "male"
+                    ? "bg-white text-gray-900 shadow-xs"
+                    : "text-white/80 hover:text-white"
+                    }`}
                 >
                   Marcus
                 </button>
@@ -581,13 +591,12 @@ function Step2Interview({ interviewData, onCompleteInterview }) {
                   {/* Visual Progress Bar for Timer */}
                   <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
                     <motion.div
-                      className={`h-full transition-all duration-300 ${
-                        isUrgent
-                          ? "bg-red-500"
-                          : isWarning
+                      className={`h-full transition-all duration-300 ${isUrgent
+                        ? "bg-red-500"
+                        : isWarning
                           ? "bg-amber-500"
                           : "bg-green-500"
-                      }`}
+                        }`}
                       style={{ width: `${Math.max(0, timeRatio * 100)}%` }}
                     />
                   </div>
@@ -711,11 +720,10 @@ function Step2Interview({ interviewData, onCompleteInterview }) {
             <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
               <div className="flex items-center gap-2.5">
                 <div
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm transition ${
-                    phase === "listening"
-                      ? "bg-green-100 text-green-600 shadow-xs"
-                      : "bg-gray-100 text-gray-400"
-                  }`}
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm transition ${phase === "listening"
+                    ? "bg-green-100 text-green-600 shadow-xs"
+                    : "bg-gray-100 text-gray-400"
+                    }`}
                 >
                   <FaMicrophone />
                 </div>
