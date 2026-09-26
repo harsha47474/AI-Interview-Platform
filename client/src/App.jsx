@@ -52,6 +52,7 @@ const App = () => {
         element={userData ? <InterviewPage /> : <Navigate to="/auth" />}
       />
       <Route path="/interview/history" element={userData ? <InterviewHistory /> : <Navigate to="/auth" />} />
+      <Route path="/history" element={userData ? <InterviewHistory /> : <Navigate to="/auth" />} />
       <Route path="/report/:interviewId" element={userData ? <InterviewReport /> : <Navigate to="/auth" />} />
       <Route path="*" element={<Navigate to={userData ? "/" : "/auth"} />} />
 

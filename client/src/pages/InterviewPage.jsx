@@ -28,7 +28,16 @@ function InterviewPage() {
         />
       )}
 
-      {step == 3 && <Step3Report report={report} />}
+      {step == 3 && (
+        <Step3Report
+          report={report}
+          onRetake={() => {
+            setStep(1);
+            setInterviewData(null);
+            setReport(null);
+          }}
+        />
+      )}
     </>
   );
 }
