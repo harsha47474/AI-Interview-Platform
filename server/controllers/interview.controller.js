@@ -91,11 +91,11 @@ export const generateQuestion = async (req, res) => {
 
     const user = await User.findById(req.userId);
 
-    // if (user.credits < 50) {
-    //   return res.status(400).json({
-    //     message: "Not enough credits. Minimum 50 required",
-    //   });
-    // }
+    if (user.credits < 50) {
+      return res.status(400).json({
+        message: "Not enough credits. Minimum 50 required",
+      });
+    }
 
     const projectText =
       Array.isArray(projects) && projects.length
