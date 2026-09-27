@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { FaSpinner } from "react-icons/fa";
+import { FaSpinner, FaExclamationTriangle } from "react-icons/fa";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
+import { useNavigate } from "react-router-dom";
 
 // Modular setup sub-components
 import Step1Features from "./setup/Step1Features";
@@ -34,6 +35,8 @@ const Step1SetUp = ({ onStartInterview }) => {
   const [analyzedData, setAnalyzedData] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   // Handle PDF resume file upload & automatic AI extraction
   const handleResume = async (e) => {
@@ -61,8 +64,8 @@ const Step1SetUp = ({ onStartInterview }) => {
       setAnalysis(result.data);
       setAnalyzedData(true);
       setAnalyzing(false);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
       setAnalyzing(false);
     }
   };
@@ -78,6 +81,7 @@ const Step1SetUp = ({ onStartInterview }) => {
   const handleStartInterview = async (e) => {
     try {
       e.preventDefault();
+      setError("");
       setLoading(true);
 
       const res = await axios.post(
@@ -93,8 +97,12 @@ const Step1SetUp = ({ onStartInterview }) => {
       console.log(res.data);
       setLoading(false);
       onStartInterview(res.data);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
+      setError(
+        err.response?.data?.message ||
+          "Failed to start interview. Please try again."
+      );
       setLoading(false);
     }
   };
@@ -138,6 +146,25 @@ const Step1SetUp = ({ onStartInterview }) => {
           {/* AI Resume Analysis Preview */}
           {analyzedData && <ResumeAnalysisCard analysis={analysis} />}
 
+          {/* Error Message if credits insufficient */}
+          {error && (
+            <div className="mt-5 p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <FaExclamationTriangle className="text-red-500 shrink-0 text-sm" />
+                <span>{error}</span>
+              </div>
+              {error.toLowerCase().includes("credit") && (
+                <button
+                  type="button"
+                  onClick={() => navigate("/pricing")}
+                  className="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold shrink-0 cursor-pointer transition text-xs shadow-xs"
+                >
+                  Buy Credits
+                </button>
+              )}
+            </div>
+          )}
+
           {/* Submit / Start Button */}
           {loading ? (
             <div className="mt-6 flex flex-col items-center justify-center">
@@ -152,7 +179,7 @@ const Step1SetUp = ({ onStartInterview }) => {
               whileTap={{ scale: 0.98 }}
               onClick={handleStartInterview}
               disabled={!role || !experience || !mode || analyzing}
-              className="w-full mt-6 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+              className="w-full mt-6 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed transition cursor-pointer"
             >
               Start Interview
             </motion.button>

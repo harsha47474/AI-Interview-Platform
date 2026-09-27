@@ -8,6 +8,7 @@ import { setUserData } from "./redux/userSlice.js";
 import InterviewPage from "./pages/InterviewPage";
 import InterviewHistory from "./pages/InterviewHistory.jsx";
 import InterviewReport from "./pages/InterviewReport.jsx";
+import Pricing from "./pages/Pricing";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -51,11 +52,23 @@ const App = () => {
         path="/interview"
         element={userData ? <InterviewPage /> : <Navigate to="/auth" />}
       />
-      <Route path="/interview/history" element={userData ? <InterviewHistory /> : <Navigate to="/auth" />} />
-      <Route path="/history" element={userData ? <InterviewHistory /> : <Navigate to="/auth" />} />
-      <Route path="/report/:interviewId" element={userData ? <InterviewReport /> : <Navigate to="/auth" />} />
+      <Route
+        path="/interview/history"
+        element={userData ? <InterviewHistory /> : <Navigate to="/auth" />}
+      />
+      <Route
+        path="/report/:interviewId"
+        element={userData ? <InterviewReport /> : <Navigate to="/auth" />}
+      />
+      <Route
+        path="/history"
+        element={userData ? <InterviewHistory /> : <Navigate to="/auth" />}
+      />
+      <Route
+        path="/pricing"
+        element={userData ? <Pricing /> : <Navigate to="/auth" />}
+      />
       <Route path="*" element={<Navigate to={userData ? "/" : "/auth"} />} />
-
     </Routes>
   );
 };

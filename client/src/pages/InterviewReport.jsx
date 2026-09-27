@@ -16,13 +16,15 @@ export default function InterviewReport() {
     const fetchReportData = async () => {
       try {
         setLoading(true);
+        console.log("fetching");
         const response = await axios.get(
           `http://localhost:3000/api/interview/report/${interviewId}`,
           {
             withCredentials: true,
-          }
+          },
         );
         setReportData(response.data);
+        console.log(response.data);
       } catch (err) {
         console.error("Error fetching interview report:", err);
         setError("Failed to load interview report. Please try again.");
@@ -42,7 +44,9 @@ export default function InterviewReport() {
         <Navbar />
         <div className="flex-1 flex flex-col items-center justify-center p-6">
           <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-gray-600 font-medium">Loading interview evaluation report...</p>
+          <p className="text-gray-600 font-medium">
+            Loading interview evaluation report...
+          </p>
         </div>
       </div>
     );
@@ -54,7 +58,9 @@ export default function InterviewReport() {
         <Navbar />
         <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
           <div className="bg-white border border-gray-200 rounded-2xl p-8 max-w-md w-full shadow-sm">
-            <h2 className="text-xl font-bold text-gray-800 mb-2">Report Not Found</h2>
+            <h2 className="text-xl font-bold text-gray-800 mb-2">
+              Report Not Found
+            </h2>
             <p className="text-sm text-gray-500 mb-6">
               {error || "Could not retrieve the requested interview report."}
             </p>

@@ -1,6 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { FaBriefcase, FaCheckCircle, FaTrophy, FaArrowRight } from "react-icons/fa";
+import {
+  FaBriefcase,
+  FaCheckCircle,
+  FaTrophy,
+  FaArrowRight,
+} from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 /**
@@ -68,8 +73,11 @@ const InterviewHistoryCard = ({ interview, index }) => {
 
         <button
           type="button"
-          onClick={() => navigate(`/report/${interview._id}`)}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gray-900 hover:bg-black text-white text-xs font-semibold transition"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(`/report/${interview._id}`);
+          }}
+          className="flex items-center gap-1.5 cursor-pointer px-4 py-2 rounded-xl bg-gray-900 hover:bg-black text-white text-xs font-semibold transition"
         >
           <span>View Report</span>
           <FaArrowRight size={10} />
