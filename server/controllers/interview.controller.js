@@ -1,4 +1,5 @@
 import fs from "fs";
+import mongoose from "mongoose";
 import { askAi } from "../services/openRouter.service.js";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import Interview from "../models/interview.model.js";
@@ -422,7 +423,6 @@ export const getReport = async (req, res) => {
     let totalCorrectness = 0;
 
     interview.questions.forEach((q) => {
-      console.log(q.score);
       totalScore += q.score || 0;
       totalConfidence += q.confidence || 0;
       totalCommunication += q.communication || 0;
