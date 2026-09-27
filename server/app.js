@@ -51,7 +51,8 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static(clientDistPath));
 
   // SPA catch-all: return index.html for any non-API route
-  app.get("*", (req, res) => {
+  // Note: Express 5 requires (.*) instead of bare * wildcard
+  app.get("(.*)", (req, res) => {
     res.sendFile(path.join(clientDistPath, "index.html"));
   });
 } else {
