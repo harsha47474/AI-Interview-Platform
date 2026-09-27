@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 import { FcGoogle } from "react-icons/fc";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../utils/firebase";
-import axios from "axios";
+import api from "../utils/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
@@ -29,11 +29,7 @@ const Auth = () => {
       let user = response.user;
       const name = user.displayName;
       const email = user.email;
-      const result = await axios.post(
-        "http://localhost:3000" + "/api/auth/google-auth",
-        { name, email },
-        { withCredentials: true },
-      );
+      const result = await api.post("/api/auth/google-auth", { name, email });
       dispatch(setUserData(result.data));
       navigate("/");
     } catch (error) {

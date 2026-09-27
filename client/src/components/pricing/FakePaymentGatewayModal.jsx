@@ -14,7 +14,7 @@ import {
   FaCheck,
 } from "react-icons/fa";
 import { BsCoin } from "react-icons/bs";
-import axios from "axios";
+import api from "../../utils/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "../../redux/userSlice";
 import { useNavigate } from "react-router-dom";
@@ -68,15 +68,11 @@ const FakePaymentGatewayModal = ({ plan, isOpen, onClose }) => {
 
       // Step 2: Call backend to add credits to the user's account
       setStatusMessage("Crediting account balance...");
-      const res = await axios.post(
-        "http://localhost:3000/api/user/add-credits",
-        {
-          credits: plan.credits,
-          planName: plan.name,
-          amount: plan.price,
-        },
-        { withCredentials: true }
-      );
+      const res = await api.post("/api/user/add-credits", {
+        credits: plan.credits,
+        planName: plan.name,
+        amount: plan.price,
+      });
 
       // Step 3: Update Redux store
       const updatedTotalCredits = res.data.credits;

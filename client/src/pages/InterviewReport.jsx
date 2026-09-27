@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../utils/api";
 import { useParams, useNavigate } from "react-router-dom";
 import Step3Report from "../components/Step3Report";
 import Navbar from "../components/Navbar";
@@ -17,14 +17,8 @@ export default function InterviewReport() {
       try {
         setLoading(true);
         console.log("fetching");
-        const response = await axios.get(
-          `http://localhost:3000/api/interview/report/${interviewId}`,
-          {
-            withCredentials: true,
-          },
-        );
+        const response = await api.get(`/api/interview/report/${interviewId}`);
         setReportData(response.data);
-        console.log(response.data);
       } catch (err) {
         console.error("Error fetching interview report:", err);
         setError("Failed to load interview report. Please try again.");

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import axios from "axios";
+import api from "../utils/api";
 
 // Modular interview sub-components
 import SpeechRecognitionFallback from "./interview/SpeechRecognitionFallback";
@@ -59,11 +59,7 @@ function Step2Interview({ interviewData, onCompleteInterview }) {
     setError("");
 
     try {
-      const res = await axios.post(
-        "http://localhost:3000/api/interview/submit",
-        payload,
-        { withCredentials: true }
-      );
+      const res = await api.post("/api/interview/submit", payload);
 
       setFeedback(res.data.feedback);
       setPhase("feedback");
@@ -209,11 +205,7 @@ function Step2Interview({ interviewData, onCompleteInterview }) {
         setPhase("done");
 
         try {
-          const res = await axios.post(
-            "http://localhost:3000/api/interview/finish",
-            { interviewId },
-            { withCredentials: true }
-          );
+          const res = await api.post("/api/interview/finish", { interviewId });
 
           console.log("Final interview result:", res.data);
           onCompleteInterview?.(res.data);

@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
 import { BsRobot } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../utils/api";
 import CreditPopup from "./navbar/CreditPopup";
 import UserMenuPopup from "./navbar/UserMenuPopup";
 
@@ -20,9 +20,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:3000/api/auth/logout", {
-        withCredentials: true,
-      });
+      await api.get("/api/auth/logout");
       dispatch(setUserData(null));
       setShowUserPopup(false);
       setShowCreditPopup(false);

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FaSpinner, FaExclamationTriangle } from "react-icons/fa";
-import axios from "axios";
+import api from "../utils/api";
 import { useSelector, useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
@@ -51,11 +51,7 @@ const Step1SetUp = ({ onStartInterview }) => {
     formData.append("resume", file);
 
     try {
-      const result = await axios.post(
-        "http://localhost:3000/api/interview/resume",
-        formData,
-        { withCredentials: true }
-      );
+      const result = await api.post("/api/interview/resume", formData);
       setRole(result.data.role || "");
       setExperience(result.data.experience || "");
       setProjects(result.data.projects || []);
@@ -84,17 +80,14 @@ const Step1SetUp = ({ onStartInterview }) => {
       setError("");
       setLoading(true);
 
-      const res = await axios.post(
-        "http://localhost:3000/api/interview/generate-questions",
-        { role, experience, mode, resumeText, projects, skills },
-        { withCredentials: true }
-      );
+      const res = await api.post("/api/interview/generate-questions", {
+        role, experience, mode, resumeText, projects, skills,
+      });
 
       if (userData) {
         dispatch(setUserData({ ...userData, credits: res.data.creditsLeft }));
       }
 
-      console.log(res.data);
       setLoading(false);
       onStartInterview(res.data);
     } catch (err) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -19,10 +19,7 @@ export default function InterviewHistory() {
     const fetchInterviews = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(
-          "http://localhost:3000/api/interview/history",
-          { withCredentials: true }
-        );
+        const res = await api.get("/api/interview/history");
         setInterviews(res.data.interviews || []);
       } catch (error) {
         console.error("Error fetching interview history:", error);

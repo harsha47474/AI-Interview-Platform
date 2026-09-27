@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
-import axios from "axios";
+import api from "./utils/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData } from "./redux/userSlice.js";
 import InterviewPage from "./pages/InterviewPage";
@@ -18,12 +18,7 @@ const App = () => {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3000" + "/api/user/current-user",
-          {
-            withCredentials: true,
-          },
-        );
+        const response = await api.get("/api/user/current-user");
         dispatch(setUserData(response.data));
       } catch (error) {
         console.log(error);
@@ -35,6 +30,7 @@ const App = () => {
 
     getUser();
   }, [dispatch]);
+
 
   if (loading) {
     return (
