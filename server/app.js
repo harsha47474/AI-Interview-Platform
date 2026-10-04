@@ -50,9 +50,9 @@ if (process.env.NODE_ENV === "production") {
   const clientDistPath = path.join(__dirname, "..", "client", "dist");
   app.use(express.static(clientDistPath));
 
-  // SPA catch-all: return index.html for any non-API route
-  // Note: Express 5 requires (.*) instead of bare * wildcard
-  app.get("(.*)", (req, res) => {
+  // SPA fallback: serve index.html for any non-API GET request
+  app.get("/{*splat}", (req, res, next) => {
+    if (req.path.startsWith("/api")) return next();
     res.sendFile(path.join(clientDistPath, "index.html"));
   });
 } else {
@@ -61,10 +61,20 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
+app.use((_request, response) => {
+  response.status(404).json({
+    success: false,
+    message: "The requested resource was not found.",
+    errors: {},
+  });
+});
+
 // ── Start ─────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`✅ Server listening on port ${PORT} [${process.env.NODE_ENV || "development"}]`);
+  console.log(
+    `✅ Server listening on port ${PORT} [${process.env.NODE_ENV || "development"}]`,
+  );
   connectDB();
 });
